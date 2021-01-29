@@ -221,14 +221,14 @@ g.setRender(gfx => {
       gfx.line(
         { x: x * tileSize, y: 0 },
         { x: x * tileSize, y: level.length * tileSize },
-        { colour: 'white' }
+        { colour: '#999999' }
       )   
     })
 
     gfx.line(
       { x: 0, y: y * tileSize },
       { x: row.length * tileSize, y: y * tileSize },
-      { colour: 'white' }
+      { colour: '#999999' }
     )
   })
 
