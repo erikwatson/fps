@@ -26,11 +26,15 @@ const canvasSize = {
 
 const tileSize = 24
 
-const columnWidth = 10
+const columnWidth = 8
 const screenInColumns = Math.ceil(canvasSize.width / columnWidth)
 
 const hero = {
-  position: vec2.create(32, 32)
+  position: vec2.create(
+    (tileSize * (level[0].length / 2)), 
+    tileSize * (level.length / 2)
+  ),
+  angle: -90
 }
 
 function shadeColor(color, percent) {
@@ -79,8 +83,7 @@ function getRays (fov, horizon, columns) {
   let steps = range(from, to, screenInColumns)
 
   return steps.map(angle => {
-    const theta = toRadians(angle)
-
+    const theta = toRadians(hero.angle + angle)
 
     return {
       from: hero.position,
@@ -98,9 +101,7 @@ g.setSize(1280, 720)
 let collisions = []
 
 g.setUpdate(dt => {
-
-  hero.position.y ++
-  hero.position.x ++ 
+  hero.angle += 1
 
   collisions = []
 
@@ -126,6 +127,7 @@ g.setUpdate(dt => {
     const collision = collisionCandidates
       .map(rect => {
         return {
+          ray: line,
           rect, 
           collision: lineVsRect(line, rect) 
         }
@@ -142,16 +144,27 @@ g.setRender(gfx => {
  
   // draw in 3d
   
-  collisions.forEach((collision, i) => {
+  collisions.forEach(({ collision, rect, ray }, i) => {
     if (!collision) { return }
-    
-    const rect = collision.rect
-    collision = collision.collision
 
-    var height = canvasSize.height - (canvasSize.height * collision.timeOfCollision)
+    // console.log(ray)
+    // debug
+
+    const rayAngle = Math.atan2(
+      ray.to.y - ray.from.y,
+      ray.to.x - ray.from.x
+    )
+
+    const correctedAngle = rayAngle - toRadians(hero.angle)
+    const newDistance = collision.timeOfCollision * Math.cos(correctedAngle)
+
+    // console.log(rayAngle, collision.timeOfCollision, newDistance)
+    // debug
+
+    var height = (0.16 * canvasSize.height) / newDistance
     let colour = (rect.type === 2) ? '#800080' : '#FFEF00'
 
-    const shade = Math.round(collision.timeOfCollision * 100)
+    const shade = Math.round(newDistance * 100)
     colour = shadeColor(colour, 50 - shade)
 
     gfx.rect(
@@ -192,8 +205,6 @@ g.setRender(gfx => {
     })
   })
 
-  // draw the hero 
-  gfx.circle(hero.position, 8)
 
   // draw the collisions 
   collisions.forEach(collision => {
@@ -208,6 +219,21 @@ g.setRender(gfx => {
       gfx.line(hero.position, collision.to, { colour: 'white' })
     }
   })
+  
+  // draw the hero 
+  gfx.circle(hero.position, 8)
+
+  // x: hero.position.x + horizon * Math.cos(theta),
+  // y: hero.position.y + horizon * Math.sin(theta)
+
+  gfx.line(
+    hero.position, 
+    { 
+      x: hero.position.x + 15 * Math.cos(toRadians(hero.angle)), 
+      y: hero.position.y + 15 * Math.sin(toRadians(hero.angle))
+    },
+    { colour: 'white' }
+  )
 })
 
 g.start()
