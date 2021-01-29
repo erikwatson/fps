@@ -182,6 +182,20 @@ g.setRender(gfx => {
     { fill: { colour: 'black' } }
   )
 
+  // draw the collisions 
+  collisions.forEach(collision => {
+    if (!collision) { return }
+
+    const rect = collision.rect
+    collision = collision.collision
+
+    if (collision) {
+      gfx.line(hero.position, collision.near, { colour: 'red' })
+    } else {
+      gfx.line(hero.position, collision.to, { colour: 'white' })
+    }
+  })
+  
   level.forEach((row, y) => {
     row.forEach((column, x) => {
       switch (level[y][x]) {
@@ -202,25 +216,22 @@ g.setRender(gfx => {
           break
 
         default: break
-      }      
+      }
+
+      gfx.line(
+        { x: x * tileSize, y: 0 },
+        { x: x * tileSize, y: level.length * tileSize },
+        { colour: 'white' }
+      )   
     })
+
+    gfx.line(
+      { x: 0, y: y * tileSize },
+      { x: row.length * tileSize, y: y * tileSize },
+      { colour: 'white' }
+    )
   })
 
-
-  // draw the collisions 
-  collisions.forEach(collision => {
-    if (!collision) { return }
-
-    const rect = collision.rect
-    collision = collision.collision
-
-    if (collision) {
-      gfx.line(hero.position, collision.near, { colour: 'red' })
-    } else {
-      gfx.line(hero.position, collision.to, { colour: 'white' })
-    }
-  })
-  
   // draw the hero 
   gfx.circle(hero.position, 8)
 
