@@ -105,7 +105,7 @@ g.setUpdate(dt => {
 
   collisions = []
 
-  const rays = getRays(90, 150, screenInColumns)
+  const rays = getRays(60, 150, screenInColumns)
 
   rays.forEach(line => {
     const collisionCandidates = []
@@ -147,9 +147,6 @@ g.setRender(gfx => {
   collisions.forEach(({ collision, rect, ray }, i) => {
     if (!collision) { return }
 
-    // console.log(ray)
-    // debug
-
     const rayAngle = Math.atan2(
       ray.to.y - ray.from.y,
       ray.to.x - ray.from.x
@@ -158,10 +155,7 @@ g.setRender(gfx => {
     const correctedAngle = rayAngle - toRadians(hero.angle)
     const newDistance = collision.timeOfCollision * Math.cos(correctedAngle)
 
-    // console.log(rayAngle, collision.timeOfCollision, newDistance)
-    // debug
-
-    var height = (0.16 * canvasSize.height) / newDistance
+    var height = (0.24 * canvasSize.height) / newDistance
     let colour = (rect.type === 2) ? '#800080' : '#FFEF00'
 
     const shade = Math.round(newDistance * 100)
