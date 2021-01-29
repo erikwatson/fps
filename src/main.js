@@ -26,7 +26,7 @@ const canvasSize = {
 
 const tileSize = 24
 
-const columnWidth = 8
+const columnWidth = 10
 const screenInColumns = Math.ceil(canvasSize.width / columnWidth)
 
 const hero = {
@@ -141,9 +141,16 @@ g.setUpdate(dt => {
 
 g.setRender(gfx => {
   gfx.clear('#232323')
- 
-  // draw in 3d
   
+  // draw a "floor"
+  gfx.rect({ x: 0, y: canvasSize.height / 2 }, { width: canvasSize.width, height: canvasSize.height / 2}, { fill: { colour: '#4c2008' } }) 
+
+  // draw a "ceiling"
+  gfx.rect({ x: 0, y: 0 }, { width: canvasSize.width, height: canvasSize.height / 2}, { fill: { colour: '#308dcc' } })
+ 
+
+  // draw the walls 
+
   collisions.forEach(({ collision, rect, ray }, i) => {
     if (!collision) { return }
 
